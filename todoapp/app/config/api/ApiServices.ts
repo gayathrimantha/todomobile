@@ -1,9 +1,9 @@
 import {Config} from '../Constants';
 import axios from 'axios';
 
-export async function toPost() {
+export async function toPost(data: any) {
   try {
-    const response = await axios.post(`${Config.baseUrl}/`);
+    const response = await axios.post(`${Config.baseUrl}/`, data);
 
     console.log(response.data, 'resp');
     return response.data;
@@ -29,9 +29,9 @@ export async function toGet() {
   }
 }
 
-export async function toUpdate(id: number) {
+export async function toUpdate(id: number, data: any) {
   try {
-    const response = await axios.patch(`${Config.baseUrl}/${id}`);
+    const response = await axios.put(`${Config.baseUrl}/${id}`, data);
 
     console.log(response.data, 'resp');
     return response.data;

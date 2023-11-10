@@ -7,5 +7,6 @@ export const theme = {
 
     background: '#ffffff',
     darkgrey: '#767676',
+    lightGreen: '#4a8e00',
   },
 };
