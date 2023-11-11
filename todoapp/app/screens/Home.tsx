@@ -1,6 +1,6 @@
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {toGet, toPost} from '../config/api/ApiServices';
+import {toGet, toGetWithFilters, toPost} from '../config/api/ApiServices';
 import {
   FAB,
   Dialog,
@@ -9,17 +9,42 @@ import {
   TextInput,
   Button,
   Snackbar,
+  Modal,
+  SegmentedButtons,
+  Divider,
 } from 'react-native-paper';
 import {theme} from '../themes/light/properties/colors';
 import {rs} from '../themes/ResponsiveScreen';
 import ToDoCard from '../assets/components/ToDoCard';
 import Toast from 'react-native-simple-toast';
+import Header from '../assets/components/Header';
+import {Searchbar} from 'react-native-paper';
+import {IconButton, MD3Colors} from 'react-native-paper';
 
 const Home = () => {
   const [toDoListData, setToDoListData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState(false);
   const [todoDescription, setTodoDescription] = useState('');
+  const [deletedItem, sstDeletedItem] = useState(0);
+  const [searchKey, setSearchKey] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [status, setStatus] = useState('');
+  const [sortBy, setSortBy] = useState('');
+
+  const showModal = () => setModalVisible(true);
+  const hideModal = () => setModalVisible(false);
+  const containerStyle = {
+    backgroundColor: 'white',
+    padding: rs(10),
+    borderRadius: rs(10),
+  };
+
+  const onChangeSearch = (key: any) => {
+    console.log(key, 'KEY SEARCH');
+    setSearchKey(key);
+    getListItemsWithFilters(key, status, sortBy);
+  };
 
   const hideDialog = () => setVisible(false);
 
@@ -28,6 +53,17 @@ const Home = () => {
     setToDoListData(response.data);
     console.log(response.data, 'reponse');
   };
+
+  const getListItemsWithFilters = async (
+    search: string,
+    newStatus: string,
+    sort: string,
+  ) => {
+    const response: any = await toGetWithFilters(search, newStatus, sort);
+    setToDoListData(response.data);
+    console.log(response.data, 'reponse');
+  };
+
   const addItems = async (data: any) => {
     const response: any = await toPost(data);
     if (response.data.id) {
@@ -38,9 +74,14 @@ const Home = () => {
     }
     console.log(response.data, 'addItems');
   };
+  const handleDeleteItem = (id: number) => {
+    // Do something when an item is pressed
+    console.log('Item pressed:', id);
+    sstDeletedItem(deletedItem + 1);
+  };
 
   const renderToDo = (item: any) => {
-    return <ToDoCard item={item} />;
+    return <ToDoCard item={item} onPressItem={handleDeleteItem} />;
   };
 
   const handleAddItem = () => {
@@ -60,10 +101,13 @@ const Home = () => {
 
   useEffect(() => {
     getListItems();
-  }, []);
+  }, [deletedItem]);
 
   const handleRefresh = () => {
     setRefreshing(true);
+    setSearchKey('');
+    setStatus('');
+    setSortBy('');
 
     setTimeout(() => {
       getListItems();
@@ -71,8 +115,38 @@ const Home = () => {
     }, 1000);
   };
 
+  const handleChangeStatus = (key: any) => {
+    console.log(key, 'KEY STATUS');
+    setStatus(key);
+    getListItemsWithFilters(searchKey, key, sortBy);
+  };
+
+  const handleChangeSortBy = (key: any) => {
+    console.log(key, 'KEY SORT BY');
+    setSortBy(key);
+    getListItemsWithFilters(searchKey, status, key);
+  };
+
   return (
     <View style={{flex: 1}}>
+      <Header />
+      <View style={{flexDirection: 'row', width: '100%'}}>
+        <Searchbar
+          placeholder="Search"
+          onChangeText={onChangeSearch}
+          value={searchKey}
+          style={styles.searchBar}
+        />
+        <IconButton
+          icon="filter"
+          iconColor={theme.colors.primary}
+          size={20}
+          onPress={() => showModal()}
+          containerColor={theme.colors.lightViolet}
+          style={styles.filterIcon}
+        />
+      </View>
+
       <FlatList
         horizontal={false}
         data={toDoListData}
@@ -81,6 +155,7 @@ const Home = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
+        contentContainerStyle={{paddingBottom: rs(70)}}
       />
       <FAB icon="plus" style={styles.fab} onPress={() => setVisible(true)} />
       <Portal>
@@ -116,6 +191,47 @@ const Home = () => {
           </Dialog.Content>
         </Dialog>
       </Portal>
+      <Portal>
+        <Modal
+          style={styles.modalConatiner}
+          visible={modalVisible}
+          onDismiss={hideModal}
+          contentContainerStyle={containerStyle}>
+          <Text style={styles.modalText}>Show</Text>
+          <SegmentedButtons
+            value={status}
+            onValueChange={handleChangeStatus}
+            buttons={[
+              {
+                value: '',
+                label: 'All',
+              },
+              {
+                value: 'false',
+                label: 'Pending',
+              },
+              {value: 'true', label: 'Completed'},
+            ]}
+          />
+          <View style={styles.itemHr}></View>
+          <Text style={styles.modalText}>Sort By</Text>
+          <SegmentedButtons
+            value={sortBy}
+            onValueChange={handleChangeSortBy}
+            buttons={[
+              {
+                value: '',
+                label: 'None',
+              },
+              {
+                value: 'asc',
+                label: 'Old to New',
+              },
+              {value: 'desc', label: 'New to Old'},
+            ]}
+          />
+        </Modal>
+      </Portal>
     </View>
   );
 };
@@ -136,5 +252,25 @@ const styles = StyleSheet.create({
   },
   snackbar: {
     zIndex: 9999,
+  },
+  searchBar: {
+    margin: rs(10),
+    width: '80%',
+  },
+  filterIcon: {
+    marginTop: rs(18),
+  },
+  modalConatiner: {
+    margin: rs(10),
+  },
+  modalText: {
+    fontSize: rs(10),
+    margin: rs(5),
+  },
+  itemHr: {
+    height: rs(1),
+    width: '100%',
+    backgroundColor: theme.colors.lightGrey,
+    marginTop: rs(7),
   },
 });
