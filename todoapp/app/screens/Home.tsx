@@ -57,6 +57,7 @@ const Home = () => {
   //Dialog for delete confirmation
   const hideDialog = () => setVisible(false);
 
+  //Get items on initial load
   const getListItems = async () => {
     setIsLoading(true);
     const response: any = await toGet();
@@ -64,6 +65,7 @@ const Home = () => {
     setIsLoading(false);
   };
 
+  //Get items with filters,search,sort
   const getListItemsWithFilters = async (
     search: string,
     newStatus: string,
@@ -75,6 +77,7 @@ const Home = () => {
     setIsLoading(false);
   };
 
+  //Function to add new item
   const addItems = async (data: any) => {
     const response: any = await toPost(data);
     if (response.data.id) {
@@ -84,14 +87,18 @@ const Home = () => {
       Toast.show('Item added!', Toast.LONG);
     }
   };
+
+  //Function to display prompt for delete
   const handleDeleteItem = (id: number) => {
     sstDeletedItem(deletedItem + 1);
   };
 
+  //Render function for flatlist
   const renderToDo = (item: any) => {
     return <ToDoCard item={item} onPressItem={handleDeleteItem} />;
   };
 
+  //Add item prompt
   const handleAddItem = () => {
     if (todoDescription === '') {
       Toast.show('Item cannot be empty', Toast.LONG);
@@ -108,9 +115,11 @@ const Home = () => {
   };
 
   useEffect(() => {
+    //Calling on initial load and on deleting each item
     getListItems();
   }, [deletedItem]);
 
+  //Function to run on pull to refresh
   const handleRefresh = () => {
     setRefreshing(true);
     setSearchKey('');
@@ -123,11 +132,13 @@ const Home = () => {
     }, 1000);
   };
 
+  //Setting filter
   const handleChangeStatus = (key: any) => {
     setStatus(key);
     getListItemsWithFilters(searchKey, key, sortBy);
   };
 
+  //Setting sort
   const handleChangeSortBy = (key: any) => {
     setSortBy(key);
     getListItemsWithFilters(searchKey, status, key);
@@ -208,6 +219,7 @@ const Home = () => {
           </Dialog.Content>
         </Dialog>
       </Portal>
+
       <Portal>
         <Modal
           style={styles.modalConatiner}
@@ -263,6 +275,7 @@ const Home = () => {
 
 export default Home;
 
+//Stylesheet
 const styles = StyleSheet.create({
   fab: {
     position: 'absolute',

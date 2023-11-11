@@ -14,6 +14,7 @@ const Header = () => {
 
 export default Header;
 
+//Stylesheet
 const styles = StyleSheet.create({
   mainContainer: {
     height: rs(40),

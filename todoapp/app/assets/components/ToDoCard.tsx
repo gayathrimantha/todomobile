@@ -33,8 +33,10 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
   const [todoId, setTodoId] = useState(item?.item?.id);
   const [done, setDone] = useState(item?.item?.attributes?.done);
 
+  //Hide delete prompt
   const hideDeleteDialog = () => setDeleteVisible(false);
 
+  //Function to update item
   const updateItems = async (data: any) => {
     const response: any = await toUpdate(todoId, data);
     if (response.data.id) {
@@ -45,6 +47,7 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
     }
   };
 
+  //Function to delete item
   const deleteItems = async () => {
     const response: any = await toDelete(todoId);
     if (response.data.id) {
@@ -54,7 +57,9 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
     }
   };
 
+  //To Hide edit dialog
   const hideDialog = () => setVisible(false);
+
   //Handle Update, Delete and Mark Complete Actions
   const handleUpdateItem = (type: any) => {
     if (type != 'delete') {
@@ -74,6 +79,8 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
       deleteItems();
     }
   };
+
+  //Delete prompt
   const handleDelete = () => {
     setDeleteVisible(true);
   };
@@ -193,6 +200,7 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
 
 export default ToDoCard;
 
+//Stylesheet
 const styles = StyleSheet.create({
   buttonStyle: {
     height: rs(25),
