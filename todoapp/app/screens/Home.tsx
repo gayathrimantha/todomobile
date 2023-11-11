@@ -183,7 +183,7 @@ const Home = () => {
               fontSize: rs(16),
               marginTop: rs(50),
             }}>
-            Add a To-Do item to get started!
+            No items!
           </Text>
         </View>
       ) : (
