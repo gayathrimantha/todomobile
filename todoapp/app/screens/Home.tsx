@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {toGet, toGetWithFilters, toPost} from '../config/api/ApiServices';
@@ -38,6 +39,8 @@ const Home = () => {
   const [status, setStatus] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  console.log(Platform.OS, 'PLatFORMM');
 
   //Show and hide modal to perform Filter operations
   const showModal = () => setModalVisible(true);
