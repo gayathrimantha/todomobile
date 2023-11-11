@@ -70,7 +70,7 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
           data: {
             desciption: todoDescription,
             done: type == 'completed' ? true : type == 'mark' ? false : done,
-            email: 'gayathrimantha16@gmail.com',
+            email: 'sai@testing.com',
           },
         };
         updateItems(data);
@@ -132,7 +132,11 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
               <Button
                 textColor={theme.colors.onPrimary}
                 buttonColor={
-                  done ? theme.colors.lightGreen : theme.colors.primary
+                  done
+                    ? theme.colors.lightGreen
+                    : done == null
+                    ? theme.colors.error
+                    : theme.colors.primary
                 }
                 contentStyle={styles.buttonStyle}
                 labelStyle={{
@@ -143,7 +147,11 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
                 }}
                 compact={true}
                 onPress={() => handleUpdateItem(done ? 'mark' : 'completed')}>
-                {done ? 'Completed' : 'Mark Complete'}
+                {done
+                  ? 'Completed'
+                  : done == null
+                  ? 'Status Unknown'
+                  : 'Mark Complete'}
               </Button>
             </View>
           </View>

@@ -107,7 +107,7 @@ const Home = () => {
         data: {
           desciption: todoDescription,
           done: false,
-          email: 'gayathrimantha16@gmail.com',
+          email: 'sai@testing.com',
         },
       };
       addItems(data);
