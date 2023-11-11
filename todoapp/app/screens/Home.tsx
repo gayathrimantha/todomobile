@@ -171,6 +171,18 @@ const Home = () => {
             size={'large'}
           />
         </View>
+      ) : toDoListData.length == 0 ? (
+        <View>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontFamily: typography.Main,
+              fontSize: rs(16),
+              marginTop: rs(50),
+            }}>
+            Add a To-Do item to get started!
+          </Text>
+        </View>
       ) : (
         <FlatList
           horizontal={false}
