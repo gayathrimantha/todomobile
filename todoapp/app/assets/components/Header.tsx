@@ -2,6 +2,7 @@ import {View, Text, StyleSheet} from 'react-native';
 import React from 'react';
 import {rs} from '../../themes/ResponsiveScreen';
 import {theme} from '../../themes/light/properties/colors';
+import {typography} from '../../themes/light/properties/typography';
 
 const Header = () => {
   return (
@@ -20,9 +21,9 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: theme.colors.background,
-    marginTop: rs(9),
+    marginTop: rs(11),
     marginLeft: rs(11),
     fontSize: rs(15),
-    fontWeight: '700',
+    fontFamily: typography.Title,
   },
 });

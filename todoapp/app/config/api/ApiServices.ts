@@ -1,5 +1,6 @@
 import {Config} from '../Constants';
 import axios from 'axios';
+import Toast from 'react-native-simple-toast';
 
 export async function toPost(data: any) {
   try {
@@ -8,7 +9,7 @@ export async function toPost(data: any) {
     console.log(response.data, 'resp');
     return response.data;
   } catch (e) {
-    console.log('failed', e);
+    Toast.show('Something went wrong, Please try again!', Toast.LONG);
 
     return {response: false, error: 0, msg: 'Network Failed'};
   }
@@ -23,7 +24,7 @@ export async function toGet() {
     console.log(response.data, 'resp');
     return response.data;
   } catch (e) {
-    console.log('failed', e);
+    Toast.show('Something went wrong, Please try again!', Toast.LONG);
 
     return {response: false, error: 0, msg: 'Network Failed'};
   }
@@ -36,14 +37,6 @@ export async function toGetWithFilters(
 ) {
   const statusItem = status == '' ? '' : status == 'false' ? 0 : 1;
   try {
-    console.log(
-      `${
-        Config.baseUrl
-      }?filters[desciption][$contains]=${searchKey}&filters[done][$contains]=${statusItem}&sort[0]=createdAt${
-        date != '' ? ':' + date : ''
-      }`,
-      'url',
-    );
     const header = {};
     const response = await axios.get(
       `${
@@ -57,7 +50,7 @@ export async function toGetWithFilters(
     console.log(response.data, 'resp');
     return response.data;
   } catch (e) {
-    console.log('failed', e);
+    Toast.show('Something went wrong, Please try again!', Toast.LONG);
 
     return {response: false, error: 0, msg: 'Network Failed'};
   }
@@ -70,7 +63,7 @@ export async function toUpdate(id: number, data: any) {
     console.log(response.data, 'resp');
     return response.data;
   } catch (e) {
-    console.log('failed', e);
+    Toast.show('Something went wrong, Please try again!', Toast.LONG);
 
     return {response: false, error: 0, msg: 'Network Failed'};
   }
@@ -83,7 +76,7 @@ export async function toDelete(id: number) {
     console.log(response.data, 'resp');
     return response.data;
   } catch (e) {
-    console.log('failed', e);
+    Toast.show('Something went wrong, Please try again!', Toast.LONG);
 
     return {response: false, error: 0, msg: 'Network Failed'};
   }

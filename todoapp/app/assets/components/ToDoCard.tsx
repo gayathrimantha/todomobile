@@ -13,12 +13,12 @@ import {theme} from '../../themes/light/properties/colors';
 import Toast from 'react-native-simple-toast';
 import {toDelete, toUpdate} from '../../config/api/ApiServices';
 import {formatDate} from '../functions/dateFormat';
+import {typography} from '../../themes/light/properties/typography';
 type RenderItemComponentProps = {
   item: any;
   onPressItem: (id: number) => void;
 };
 const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
-  // console.log(item, 'neww');
   const [visible, setVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [todoDescription, setTodoDescription] = useState(
@@ -41,27 +41,21 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
       setTodoDescriptionOne(response.data.attributes.desciption);
       setDone(response.data.attributes.done);
       setVisible(false);
-
       Toast.show('Item updated!', Toast.LONG);
     }
-    console.log(response.data, 'updateItems');
   };
 
   const deleteItems = async () => {
     const response: any = await toDelete(todoId);
     if (response.data.id) {
-      // setTodoDescriptionOne(response.data.attributes.desciption);
-      // setDone(response.data.attributes.done);
-      // setVisible(false);
       Toast.show('Item Deleted!', Toast.LONG);
       setDeleteVisible(false);
       onPressItem(response.data.id);
-      console.log(response, 'deletereponse');
     }
-    console.log(response.data, 'updateItems');
   };
 
   const hideDialog = () => setVisible(false);
+  //Handle Update, Delete and Mark Complete Actions
   const handleUpdateItem = (type: any) => {
     if (type != 'delete') {
       if (todoDescription === '') {
@@ -87,7 +81,9 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
     <View style={styles.cardContainer}>
       <Card mode="contained">
         <Card.Content>
-          <Text variant="titleMedium">{todoDescriptionOne}</Text>
+          <Text style={{fontFamily: typography.Title, fontSize: rs(14)}}>
+            {todoDescriptionOne}
+          </Text>
           <Text style={styles.dateFormat}>
             Added on {formatDate(createdDate)}
           </Text>
@@ -136,6 +132,7 @@ const ToDoCard: React.FC<RenderItemComponentProps> = ({item, onPressItem}) => {
                   fontSize: rs(10),
                   marginTop: rs(0),
                   marginBottom: rs(0),
+                  fontFamily: typography.Main,
                 }}
                 compact={true}
                 onPress={() => handleUpdateItem(done ? 'mark' : 'completed')}>
@@ -211,6 +208,8 @@ const styles = StyleSheet.create({
   },
   dateFormat: {
     fontSize: rs(10),
+    fontFamily: typography.Main,
+    marginTop: rs(5),
   },
   itemHr: {
     height: rs(1),

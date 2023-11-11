@@ -1,4 +1,10 @@
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {toGet, toGetWithFilters, toPost} from '../config/api/ApiServices';
 import {
@@ -8,10 +14,9 @@ import {
   Text,
   TextInput,
   Button,
-  Snackbar,
   Modal,
   SegmentedButtons,
-  Divider,
+  ActivityIndicator,
 } from 'react-native-paper';
 import {theme} from '../themes/light/properties/colors';
 import {rs} from '../themes/ResponsiveScreen';
@@ -19,7 +24,8 @@ import ToDoCard from '../assets/components/ToDoCard';
 import Toast from 'react-native-simple-toast';
 import Header from '../assets/components/Header';
 import {Searchbar} from 'react-native-paper';
-import {IconButton, MD3Colors} from 'react-native-paper';
+import {IconButton} from 'react-native-paper';
+import {typography} from '../themes/light/properties/typography';
 
 const Home = () => {
   const [toDoListData, setToDoListData] = useState([]);
@@ -31,7 +37,9 @@ const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [status, setStatus] = useState('');
   const [sortBy, setSortBy] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
+  //Show and hide modal to perform Filter operations
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);
   const containerStyle = {
@@ -39,19 +47,21 @@ const Home = () => {
     padding: rs(10),
     borderRadius: rs(10),
   };
-
+  //Handling search operation and updating list items
   const onChangeSearch = (key: any) => {
     console.log(key, 'KEY SEARCH');
     setSearchKey(key);
     getListItemsWithFilters(key, status, sortBy);
   };
 
+  //Dialog for delete confirmation
   const hideDialog = () => setVisible(false);
 
   const getListItems = async () => {
+    setIsLoading(true);
     const response: any = await toGet();
     setToDoListData(response.data);
-    console.log(response.data, 'reponse');
+    setIsLoading(false);
   };
 
   const getListItemsWithFilters = async (
@@ -59,9 +69,10 @@ const Home = () => {
     newStatus: string,
     sort: string,
   ) => {
+    setIsLoading(true);
     const response: any = await toGetWithFilters(search, newStatus, sort);
     setToDoListData(response.data);
-    console.log(response.data, 'reponse');
+    setIsLoading(false);
   };
 
   const addItems = async (data: any) => {
@@ -72,11 +83,8 @@ const Home = () => {
       getListItems();
       Toast.show('Item added!', Toast.LONG);
     }
-    console.log(response.data, 'addItems');
   };
   const handleDeleteItem = (id: number) => {
-    // Do something when an item is pressed
-    console.log('Item pressed:', id);
     sstDeletedItem(deletedItem + 1);
   };
 
@@ -116,13 +124,11 @@ const Home = () => {
   };
 
   const handleChangeStatus = (key: any) => {
-    console.log(key, 'KEY STATUS');
     setStatus(key);
     getListItemsWithFilters(searchKey, key, sortBy);
   };
 
   const handleChangeSortBy = (key: any) => {
-    console.log(key, 'KEY SORT BY');
     setSortBy(key);
     getListItemsWithFilters(searchKey, status, key);
   };
@@ -146,24 +152,34 @@ const Home = () => {
           style={styles.filterIcon}
         />
       </View>
+      {isLoading ? (
+        <View style={{flex: 1}}>
+          <ActivityIndicator
+            animating={true}
+            color={theme.colors.primary}
+            size={'large'}
+          />
+        </View>
+      ) : (
+        <FlatList
+          horizontal={false}
+          data={toDoListData}
+          renderItem={renderToDo}
+          keyExtractor={(item: any) => item.id}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+          contentContainerStyle={{paddingBottom: rs(70)}}
+        />
+      )}
 
-      <FlatList
-        horizontal={false}
-        data={toDoListData}
-        renderItem={renderToDo}
-        keyExtractor={(item: any) => item.id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-        contentContainerStyle={{paddingBottom: rs(70)}}
-      />
       <FAB icon="plus" style={styles.fab} onPress={() => setVisible(true)} />
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Content>
             <TextInput
               mode="outlined"
-              label="Add Item"
+              label="Add New To-Do Item"
               placeholder="Type here ..."
               multiline={true}
               onChangeText={text => setTodoDescription(text)}
@@ -182,6 +198,7 @@ const Home = () => {
                   fontSize: rs(10),
                   marginTop: rs(0),
                   marginBottom: rs(0),
+                  fontFamily: typography.Main,
                 }}
                 compact={true}
                 onPress={handleAddItem}>
@@ -197,6 +214,14 @@ const Home = () => {
           visible={modalVisible}
           onDismiss={hideModal}
           contentContainerStyle={containerStyle}>
+          <TouchableOpacity onPress={hideModal} style={styles.closeButton}>
+            <IconButton
+              icon="close"
+              iconColor={theme.colors.black}
+              size={10}
+              containerColor={theme.colors.lightGrey}
+            />
+          </TouchableOpacity>
           <Text style={styles.modalText}>Show</Text>
           <SegmentedButtons
             value={status}
@@ -256,6 +281,7 @@ const styles = StyleSheet.create({
   searchBar: {
     margin: rs(10),
     width: '80%',
+    fontFamily: typography.Main,
   },
   filterIcon: {
     marginTop: rs(18),
@@ -266,11 +292,18 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: rs(10),
     margin: rs(5),
+    fontFamily: typography.Main,
   },
   itemHr: {
     height: rs(1),
     width: '100%',
     backgroundColor: theme.colors.lightGrey,
     marginTop: rs(7),
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+  },
+  closeButtonText: {
+    fontSize: rs(16),
   },
 });

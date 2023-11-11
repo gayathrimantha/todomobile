@@ -1,7 +1,6 @@
 export const formatDate = (isoDateString: any) => {
   const date = new Date(isoDateString);
 
-  // Function to add suffix to date
   const getDaySuffix = (day: number) => {
     if (day > 3 && day < 21) return 'th';
     switch (day % 10) {
@@ -16,7 +15,6 @@ export const formatDate = (isoDateString: any) => {
     }
   };
 
-  // Format the date components
   const day = date.getDate();
   const monthNames = [
     'January',
@@ -35,12 +33,11 @@ export const formatDate = (isoDateString: any) => {
   const month = monthNames[date.getMonth()];
   const year = date.getFullYear();
 
-  // Format the time
   let hours = date.getHours();
   const minutes = date.getMinutes();
   const ampm = hours >= 12 ? 'PM' : 'AM';
   hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
+  hours = hours ? hours : 12;
   const formattedTime =
     hours.toString().padStart(2, '0') +
     ':' +
